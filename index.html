@@ -55,7 +55,7 @@
       border-radius: 9px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: flex; align-items: center; justify-content: center;
-      font-weight: 800; color: var(--bg); font-size: 15px;
+      font-weight: 800; color: var(--bg); font-size: 13px;
       flex-shrink: 0;
     }
 
@@ -112,14 +112,12 @@
       color: var(--accent);
       border: 1px solid rgba(110,255,200,0.15);
     }
-
     .chat-item-title {
       flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .chat-item-del {
       opacity: 0;
       background: none; border: none;
@@ -139,7 +137,6 @@
       flex-direction: column;
       gap: 6px;
     }
-
     .stat-row {
       display: flex;
       justify-content: space-between;
@@ -147,7 +144,6 @@
       color: var(--muted);
       font-family: 'JetBrains Mono', monospace;
     }
-
     .stat-val { color: var(--accent); }
 
     #main {
@@ -179,16 +175,11 @@
       flex-shrink: 0;
       background: var(--bg);
     }
-
     .chat-title-display {
-      font-size: 15px;
-      font-weight: 700;
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 15px; font-weight: 700;
+      flex: 1; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
     }
-
     .model-pill {
       background: rgba(110,255,200,0.08);
       border: 1px solid rgba(110,255,200,0.2);
@@ -261,7 +252,7 @@
       border-radius: 8px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700;
+      font-size: 11px; font-weight: 700;
     }
     .avatar.ai-av {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -282,26 +273,22 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
-
     .bubble.user {
       background: linear-gradient(135deg, #122040, #1a3666);
       border: 1px solid rgba(59,130,246,0.25);
       border-bottom-right-radius: 4px;
     }
-
     .bubble.ai {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-bottom-left-radius: 4px;
     }
-
     .bubble.error {
       background: #1a0d0d;
       border: 1px solid rgba(255,95,87,0.3);
       color: #ff8080; font-size: 13px;
       border-bottom-left-radius: 4px;
     }
-
     .bubble code {
       font-family: 'JetBrains Mono', monospace;
       background: rgba(0,0,0,0.35);
@@ -368,7 +355,6 @@
       display: flex; gap: 10px; align-items: flex-end;
       flex-shrink: 0;
     }
-
     .input-wrap {
       flex: 1;
       background: var(--bg2);
@@ -420,11 +406,8 @@
     }
 
     .no-chats {
-      text-align: center;
-      padding: 20px 10px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.7;
+      text-align: center; padding: 20px 10px;
+      font-size: 12px; color: var(--muted); line-height: 1.7;
     }
   </style>
 </head>
@@ -433,7 +416,9 @@
 <div id="overlay" onclick="closeSidebar()"></div>
 <button id="menuBtn" onclick="toggleSidebar()">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
   </svg>
 </button>
 
@@ -448,7 +433,8 @@
 
   <button id="newChatBtn" onclick="newChat()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
     Новый чат
   </button>
@@ -487,17 +473,17 @@
     <button id="sendBtn" onclick="send()">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
            stroke="#0a0f1e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"></line>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
       </svg>
     </button>
   </div>
 </div>
 
 <script>
-  const WORKER_URL = "/api/chat";
+  const API = "/api/chat";
   const SYSTEM = "Ты — MChat, умный и дружелюбный ИИ-помощник. У тебя есть доступ к интернету — используй его когда нужна актуальная информация. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
-  const STORAGE_KEY = "mchat_chats_v3";
+  const STORAGE_KEY = "mchat_v3";
 
   let chats = [];
   let activeChatId = null;
@@ -521,48 +507,40 @@
   }
 
   function newChat() {
-    const id = "chat_" + Date.now();
-    chats.unshift({ id, title: "Новый чат", messages: [], createdAt: Date.now() });
+    const id = "c" + Date.now();
+    chats.unshift({ id, title: "Новый чат", messages: [] });
     activeChatId = id;
-    saveChats();
-    renderSidebar();
-    renderChat();
-    closeSidebar();
+    saveChats(); renderSidebar(); renderChat(); closeSidebar();
     input.focus();
   }
 
   function switchChat(id) {
     activeChatId = id;
-    renderSidebar();
-    renderChat();
-    closeSidebar();
+    renderSidebar(); renderChat(); closeSidebar();
   }
 
   function deleteChat(id, e) {
     e.stopPropagation();
     chats = chats.filter(c => c.id !== id);
     if (activeChatId === id) activeChatId = chats.length ? chats[0].id : null;
-    saveChats();
-    renderSidebar();
-    renderChat();
+    saveChats(); renderSidebar(); renderChat();
   }
 
   function getActive() { return chats.find(c => c.id === activeChatId); }
-  function autoTitle(text) { return text.length > 36 ? text.slice(0, 36) + "…" : text; }
+  function autoTitle(t) { return t.length > 36 ? t.slice(0, 36) + "…" : t; }
 
   function renderSidebar() {
     const list = $("chatList");
     if (!chats.length) {
-      list.innerHTML = '<div class="no-chats">Нет чатов.<br>Нажми «Новый чат» чтобы начать.</div>';
+      list.innerHTML = '<div class="no-chats">Нет чатов.<br>Нажми «Новый чат».</div>';
       return;
     }
     list.innerHTML = chats.map(c => `
       <div class="chat-item ${c.id === activeChatId ? 'active' : ''}" onclick="switchChat('${c.id}')">
         <span style="font-size:14px">💬</span>
         <span class="chat-item-title">${escHtml(c.title)}</span>
-        <button class="chat-item-del" onclick="deleteChat('${c.id}', event)">✕</button>
-      </div>
-    `).join("");
+        <button class="chat-item-del" onclick="deleteChat('${c.id}',event)">✕</button>
+      </div>`).join("");
   }
 
   function updateStats() {
@@ -570,25 +548,27 @@
     $("statMsgs").textContent = chats.reduce((s, c) => s + c.messages.length, 0);
   }
 
+  function welcomeHTML() {
+    return `<div class="welcome">
+      <span class="welcome-icon">✦</span>
+      <h2>Привет! Я <span>MChat</span></h2>
+      <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
+      <div class="chips">
+        <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
+        <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
+        <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
+        <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
+        <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
+        <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
+      </div>
+    </div>`;
+  }
+
   function renderChat() {
     const chat = getActive();
     chatEl.innerHTML = "";
-
     if (!chat || !chat.messages.length) {
-      chatEl.innerHTML = `
-        <div class="welcome">
-          <span class="welcome-icon">✦</span>
-          <h2>Привет! Я <span>MChat</span></h2>
-          <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
-          <div class="chips">
-            <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
-            <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-            <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
-            <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
-            <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
-            <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
-          </div>
-        </div>`;
+      chatEl.innerHTML = welcomeHTML();
       $("chatTitleDisplay").textContent = "Новый чат";
     } else {
       $("chatTitleDisplay").textContent = chat.title;
@@ -610,7 +590,7 @@
 
     const bub = document.createElement("div");
     bub.className = "bubble " + role;
-    bub.innerHTML = formatText(text);
+    bub.innerHTML = role === "user" ? escHtml(text) : formatText(text);
 
     row.appendChild(av);
     row.appendChild(bub);
@@ -628,10 +608,13 @@
   }
 
   function escHtml(s) {
-    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;");
   }
 
-  function typeText(bubble, text, speed = 10) {
+  function typeText(bubble, text) {
     return new Promise(resolve => {
       bubble.innerHTML = "";
       const cursor = document.createElement("span");
@@ -650,7 +633,7 @@
           bubble.innerHTML = formatText(text);
           resolve();
         }
-      }, speed);
+      }, 10);
     });
   }
 
@@ -662,7 +645,7 @@
       <div class="search-dot"></div>
       <div class="search-dot"></div>
       <div class="search-dot"></div>
-    </div> Ищу в интернете...`;
+    </div>Ищу в интернете...`;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
   }
@@ -691,7 +674,7 @@
     showSearching();
 
     try {
-      const res = await fetch(WORKER_URL, {
+      const res = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -706,7 +689,7 @@
         const row = document.createElement("div");
         row.className = "msg-row ai";
         row.innerHTML = `<div class="avatar ai-av">MC</div>
-          <div class="bubble error">⚠️ ${escHtml(data?.error?.message || "Ошибка сервера")}</div>`;
+          <div class="bubble error">⚠️ ${escHtml(data?.error?.message || "Ошибка")}</div>`;
         chatEl.appendChild(row);
         chat.messages.pop();
         saveChats();
@@ -759,7 +742,7 @@
   }
 
   loadChats();
-  if (chats.length) { activeChatId = chats[0].id; }
+  if (chats.length) activeChatId = chats[0].id;
   renderChat();
   renderSidebar();
   updateStats();

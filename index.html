@@ -38,6 +38,16 @@
     header h1 span { color: #7effd4; }
     .subtitle { font-size: 11px; color: #6b7a99; margin-top: 2px; }
 
+    .badge {
+      margin-left: auto;
+      background: rgba(126,255,212,0.1);
+      border: 1px solid rgba(126,255,212,0.25);
+      color: #7effd4;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
     #chat {
       flex: 1;
       overflow-y: auto;
@@ -59,12 +69,32 @@
     .welcome h2 span { color: #7effd4; }
     .welcome p { color: #6b7a99; font-size: 15px; line-height: 1.6; }
 
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .chip {
+      background: #141c2e;
+      border: 1px solid rgba(126,255,212,0.2);
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #a0b0cc;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip:hover { border-color: #7effd4; color: #7effd4; }
+
     .bubble {
-      max-width: 80%;
+      max-width: 82%;
       padding: 12px 16px;
       border-radius: 16px;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.65;
       animation: fadeIn 0.25s ease;
       white-space: pre-wrap;
       word-break: break-word;
@@ -98,27 +128,47 @@
       font-size: 13px;
     }
 
-    .typing {
+    /* Курсор как у Claude */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #7effd4;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.7s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Поиск индикатор */
+    .searching {
       align-self: flex-start;
-      display: flex; gap: 6px;
-      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
       background: #141c2e;
       border: 1px solid rgba(126,255,212,0.15);
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #6b7a99;
+      animation: fadeIn 0.25s ease;
     }
 
-    .typing span {
-      width: 7px; height: 7px;
-      background: #7effd4; border-radius: 50%;
-      animation: bounce 1.2s ease-in-out infinite;
+    .search-dot {
+      width: 6px; height: 6px;
+      background: #7effd4;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
     }
-    .typing span:nth-child(2) { animation-delay: 0.2s; }
-    .typing span:nth-child(3) { animation-delay: 0.4s; }
 
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30% { transform: translateY(-6px); opacity: 1; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
     }
 
     .input-area {
@@ -162,14 +212,21 @@
   <div class="logo">M</div>
   <div>
     <h1>Mota<span>AI</span></h1>
-    <div class="subtitle">Llama 3.3 · Groq</div>
+    <div class="subtitle">compound-beta · Groq</div>
   </div>
+  <div class="badge">🌐 V2</div>
 </header>
 
 <div id="chat">
   <div class="welcome">
     <h2>Привет! Я <span>MotaAI</span> 👋</h2>
-    <p>Задай любой вопрос — помогу с текстами,<br>кодом, идеями и не только.</p>
+    <p>Теперь умею искать в интернете,<br>писать код и общаться на любом языке.</p>
+    <div class="chips">
+      <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
+      <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
+      <div class="chip" onclick="ask('Какой сегодня курс доллара?')">💵 Курс валют</div>
+      <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
+    </div>
   </div>
 </div>
 
@@ -186,10 +243,8 @@
 </div>
 
 <script>
-  // ✅ Сюда вставь свой URL после деплоя Worker'а
   const WORKER_URL = "https://motaai.mattmamaev.workers.dev";
-
-  const SYSTEM = "Ты — MotaAI, умный и дружелюбный ИИ-помощник. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
+  const SYSTEM = "Ты — MotaAI, умный и дружелюбный ИИ-помощник. У тебя есть доступ к интернету — используй его когда нужна актуальная информация. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
   const history = [];
 
   const input = document.getElementById("input");
@@ -205,24 +260,33 @@
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   });
 
-  function addBubble(role, text) {
+  function ask(text) {
+    input.value = text;
+    send();
+  }
+
+  function addBubble(role, text = "") {
     chat.querySelector(".welcome")?.remove();
     const div = document.createElement("div");
     div.className = "bubble " + role;
     div.innerText = text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+    return div;
   }
 
-  function showTyping() {
+  function showSearching() {
     const div = document.createElement("div");
-    div.className = "typing"; div.id = "typing";
-    div.innerHTML = "<span></span><span></span><span></span>";
+    div.className = "searching";
+    div.id = "searching";
+    div.innerHTML = '<div class="search-dot"></div> Ищу в интернете...';
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
   }
 
-  function removeTyping() { document.getElementById("typing")?.remove(); }
+  function removeSearching() {
+    document.getElementById("searching")?.remove();
+  }
 
   async function send() {
     const text = input.value.trim();
@@ -233,36 +297,69 @@
 
     history.push({ role: "user", content: text });
     addBubble("user", text);
-    showTyping();
+    showSearching();
 
     try {
       const res = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [
-            { role: "system", content: SYSTEM },
-            ...history
-          ]
+          messages: [{ role: "system", content: SYSTEM }, ...history]
         }),
       });
 
-      const data = await res.json();
-      removeTyping();
+      removeSearching();
 
-      if (!res.ok || data.error) {
-        addBubble("error", "⚠️ " + (data?.error?.message || "Ошибка сервера"));
+      if (!res.ok) {
+        addBubble("error", "⚠️ Ошибка сервера: " + res.status);
         history.pop();
         btn.disabled = false;
         return;
       }
 
-      const reply = data.choices?.[0]?.message?.content || "Пустой ответ.";
-      history.push({ role: "assistant", content: reply });
-      addBubble("ai", reply);
+      // Создаём пузырь и стримим в него
+      const bubble = addBubble("ai", "");
+      const cursor = document.createElement("span");
+      cursor.className = "cursor";
+      bubble.appendChild(cursor);
 
-    } catch {
-      removeTyping();
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+
+          try {
+            const json = JSON.parse(data);
+            const delta = json.choices?.[0]?.delta?.content;
+            if (delta) {
+              fullText += delta;
+              bubble.innerText = fullText;
+              bubble.appendChild(cursor);
+              chat.scrollTop = chat.scrollHeight;
+            }
+          } catch {}
+        }
+      }
+
+      // Убираем курсор
+      cursor.remove();
+      if (!fullText) bubble.innerText = "Нет ответа.";
+
+      history.push({ role: "assistant", content: fullText });
+
+    } catch (err) {
+      removeSearching();
       addBubble("error", "⚠️ Нет соединения. Проверь интернет.");
       history.pop();
     }

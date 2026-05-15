@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MotaAI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0f1e;
+      color: #e8eef8;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(126,255,212,0.15);
+      background: #0a0f1e;
+      flex-shrink: 0;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 12px; }
+
+    .logo {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7effd4, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: #0a0f1e; font-size: 16px;
+    }
+
+    header h1 { font-size: 20px; font-weight: 700; }
+    header h1 span { color: #7effd4; }
+    .subtitle { font-size: 11px; color: #6b7a99; margin-top: 2px; }
+
+    .change-key-btn {
+      background: rgba(126,255,212,0.1);
+      border: 1px solid rgba(126,255,212,0.2);
+      color: #7effd4;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .change-key-btn:hover { background: rgba(126,255,212,0.2); }
+
+    /* Setup screen */
+    #setup {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .setup-box {
+      background: #141c2e;
+      border: 1px solid rgba(126,255,212,0.2);
+      border-radius: 20px;
+      padding: 36px 28px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .setup-box h2 { font-size: 22px; margin-bottom: 10px; }
+    .setup-box h2 span { color: #7effd4; }
+    .setup-box p { color: #6b7a99; font-size: 14px; line-height: 1.8; margin-bottom: 24px; }
+    .setup-box a { color: #7effd4; text-decoration: none; }
+    .setup-box a:hover { text-decoration: underline; }
+
+    .setup-box input {
+      width: 100%;
+      background: #0a0f1e;
+      border: 1px solid rgba(126,255,212,0.25);
+      border-radius: 10px;
+      color: #e8eef8;
+      font-size: 14px;
+      padding: 12px 14px;
+      outline: none;
+      margin-bottom: 14px;
+      font-family: monospace;
+      transition: border-color 0.2s;
+    }
+    .setup-box input:focus { border-color: #7effd4; }
+
+    .setup-btn {
+      width: 100%; padding: 13px;
+      border-radius: 10px; border: none;
+      background: linear-gradient(135deg, #7effd4, #3b82f6);
+      color: #0a0f1e; font-size: 16px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .setup-btn:hover { opacity: 0.85; }
+
+    .note { margin-top: 14px; font-size: 12px; color: #3d4d6a; }
+
+    /* Chat screen */
+    #chat-screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    #chat::-webkit-scrollbar { width: 4px; }
+    #chat::-webkit-scrollbar-thumb { background: #2a3555; border-radius: 4px; }
+
+    .welcome {
+      text-align: center;
+      margin: auto;
+      padding: 40px 20px;
+    }
+    .welcome h2 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+    .welcome h2 span { color: #7effd4; }
+    .welcome p { color: #6b7a99; font-size: 15px; line-height: 1.6; }
+
+    .bubble {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      animation: fadeIn 0.25s ease;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #1a3a5c, #1e4d8c);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble.ai {
+      align-self: flex-start;
+      background: #141c2e;
+      border: 1px solid rgba(126,255,212,0.15);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble.error {
+      align-self: flex-start;
+      background: #1e0f0f;
+      border: 1px solid rgba(255,80,80,0.3);
+      border-bottom-left-radius: 4px;
+      color: #ff8080;
+      font-size: 13px;
+    }
+
+    .typing {
+      align-self: flex-start;
+      display: flex; gap: 6px;
+      padding: 14px 18px;
+      background: #141c2e;
+      border: 1px solid rgba(126,255,212,0.15);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+    }
+
+    .typing span {
+      width: 7px; height: 7px;
+      background: #7effd4; border-radius: 50%;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .input-area {
+      padding: 14px 20px;
+      border-top: 1px solid rgba(126,255,212,0.1);
+      background: #0a0f1e;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    textarea {
+      flex: 1;
+      background: #141c2e;
+      border: 1px solid rgba(126,255,212,0.2);
+      border-radius: 12px;
+      color: #e8eef8;
+      font-size: 15px;
+      font-family: inherit;
+      padding: 12px 14px;
+      resize: none;
+      outline: none;
+      max-height: 120px;
+      line-height: 1.5;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: rgba(126,255,212,0.5); }
+    textarea::placeholder { color: #3d4d6a; }
+
+    #sendBtn {
+      width: 44px; height: 44px;
+      border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #7effd4, #3b82f6);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    #sendBtn:hover { opacity: 0.85; }
+    #sendBtn:active { transform: scale(0.95); }
+    #sendBtn:disabled { opacity: 0.35; cursor: default; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">M</div>
+    <div>
+      <h1>Mota<span>AI</span></h1>
+      <div class="subtitle">Llama 3.3 · Groq</div>
+    </div>
+  </div>
+  <button class="change-key-btn" id="changeKeyBtn" onclick="changeKey()" style="display:none">
+    Сменить ключ
+  </button>
+</header>
+
+<!-- Setup screen -->
+<div id="setup">
+  <div class="setup-box">
+    <h2>Введи <span>API ключ</span></h2>
+    <p>
+      Бесплатный ключ на<br>
+      <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
+      Регистрация → API Keys → Create Key
+    </p>
+    <input type="password" id="apiKeyInput" placeholder="gsk_xxxxxxxxxxxxxxxx" />
+    <button class="setup-btn" onclick="startChat()">Начать чат →</button>
+    <div class="note">Ключ хранится только в твоём браузере</div>
+  </div>
+</div>
+
+<!-- Chat screen -->
+<div id="chat-screen">
+  <div id="chat">
+    <div class="welcome">
+      <h2>Привет! Я <span>MotaAI</span> 👋</h2>
+      <p>Задай любой вопрос — помогу с текстами,<br>кодом, идеями и не только.</p>
+    </div>
+  </div>
+  <div class="input-area">
+    <textarea id="input" rows="1" placeholder="Напиши сообщение..."></textarea>
+    <button id="sendBtn" onclick="send()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="#0a0f1e" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const SYSTEM = "Ты — MotaAI, умный и дружелюбный ИИ-помощник. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
+  const history = [];
+  let API_KEY = "";
+
+  // Load saved key
+  const saved = localStorage.getItem("groq_key");
+  if (saved) {
+    API_KEY = saved;
+    showChat();
+  }
+
+  function startChat() {
+    const key = document.getElementById("apiKeyInput").value.trim();
+    if (!key) { alert("Введи API ключ!"); return; }
+    API_KEY = key;
+    localStorage.setItem("groq_key", key);
+    showChat();
+  }
+
+  function showChat() {
+    document.getElementById("setup").style.display = "none";
+    document.getElementById("chat-screen").style.display = "flex";
+    document.getElementById("changeKeyBtn").style.display = "block";
+    document.getElementById("input").focus();
+  }
+
+  function changeKey() {
+    localStorage.removeItem("groq_key");
+    API_KEY = "";
+    document.getElementById("chat-screen").style.display = "none";
+    document.getElementById("changeKeyBtn").style.display = "none";
+    document.getElementById("setup").style.display = "flex";
+    document.getElementById("apiKeyInput").value = "";
+  }
+
+  const input = document.getElementById("input");
+  const chat  = document.getElementById("chat");
+  const btn   = document.getElementById("sendBtn");
+
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+  });
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  function addBubble(role, text) {
+    chat.querySelector(".welcome")?.remove();
+    const div = document.createElement("div");
+    div.className = "bubble " + role;
+    div.innerText = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement("div");
+    div.className = "typing";
+    div.id = "typing";
+    div.innerHTML = "<span></span><span></span><span></span>";
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function removeTyping() {
+    document.getElementById("typing")?.remove();
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text || btn.disabled) return;
+
+    input.value = "";
+    input.style.height = "auto";
+    btn.disabled = true;
+
+    history.push({ role: "user", content: text });
+    addBubble("user", text);
+    showTyping();
+
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + API_KEY,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          max_tokens: 1024,
+          messages: [
+            { role: "system", content: SYSTEM },
+            ...history
+          ],
+        }),
+      });
+
+      const data = await res.json();
+
+      removeTyping();
+
+      if (!res.ok) {
+        const msg = data?.error?.message || "Неизвестная ошибка (код " + res.status + ")";
+        addBubble("error", "⚠️ " + msg);
+        if (res.status === 401) {
+          addBubble("error", "Неверный ключ. Нажми «Сменить ключ» и введи новый.");
+        }
+        history.pop();
+        btn.disabled = false;
+        return;
+      }
+
+      const reply = data.choices?.[0]?.message?.content || "Пустой ответ.";
+      history.push({ role: "assistant", content: reply });
+      addBubble("ai", reply);
+
+    } catch (err) {
+      removeTyping();
+      addBubble("error", "⚠️ Нет соединения с сервером. Проверь интернет.");
+      history.pop();
+    }
+
+    btn.disabled = false;
+    input.focus();
+  }
+</script>
+
+</body>
+</html>

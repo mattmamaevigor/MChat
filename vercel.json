@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 30
+    }
+  },
+  "api": {
+    "bodyParser": {
+      "sizeLimit": "4mb"
+    }
+  }
+}

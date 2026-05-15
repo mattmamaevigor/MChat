@@ -128,7 +128,6 @@
       font-size: 13px;
     }
 
-    /* Курсор как у Claude */
     .cursor {
       display: inline-block;
       width: 2px;
@@ -144,7 +143,6 @@
       50% { opacity: 0; }
     }
 
-    /* Поиск индикатор */
     .searching {
       align-self: flex-start;
       display: flex;
@@ -224,7 +222,7 @@
     <div class="chips">
       <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
       <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-      <div class="chip" onclick="ask('Какой сегодня курс доллара?')">💵 Курс валют</div>
+      <div class="chip" onclick="ask('Какой сейчас курс доллара к рублю?')">💵 Курс валют</div>
       <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
     </div>
   </div>
@@ -288,6 +286,29 @@
     document.getElementById("searching")?.remove();
   }
 
+  // Анимация печатания
+  function typeText(bubble, text, speed = 12) {
+    return new Promise(resolve => {
+      const cursor = document.createElement("span");
+      cursor.className = "cursor";
+      bubble.appendChild(cursor);
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          bubble.innerText = text.slice(0, i + 1);
+          bubble.appendChild(cursor);
+          i++;
+          chat.scrollTop = chat.scrollHeight;
+        } else {
+          clearInterval(interval);
+          cursor.remove();
+          resolve();
+        }
+      }, speed);
+    });
+  }
+
   async function send() {
     const text = input.value.trim();
     if (!text || btn.disabled) return;
@@ -308,55 +329,21 @@
         }),
       });
 
+      const data = await res.json();
       removeSearching();
 
-      if (!res.ok) {
-        addBubble("error", "⚠️ Ошибка сервера: " + res.status);
+      if (!res.ok || data.error) {
+        addBubble("error", "⚠️ " + (data?.error?.message || "Ошибка сервера"));
         history.pop();
         btn.disabled = false;
         return;
       }
 
-      // Создаём пузырь и стримим в него
+      const reply = data.choices?.[0]?.message?.content || "Нет ответа.";
+      history.push({ role: "assistant", content: reply });
+
       const bubble = addBubble("ai", "");
-      const cursor = document.createElement("span");
-      cursor.className = "cursor";
-      bubble.appendChild(cursor);
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") continue;
-
-          try {
-            const json = JSON.parse(data);
-            const delta = json.choices?.[0]?.delta?.content;
-            if (delta) {
-              fullText += delta;
-              bubble.innerText = fullText;
-              bubble.appendChild(cursor);
-              chat.scrollTop = chat.scrollHeight;
-            }
-          } catch {}
-        }
-      }
-
-      // Убираем курсор
-      cursor.remove();
-      if (!fullText) bubble.innerText = "Нет ответа.";
-
-      history.push({ role: "assistant", content: fullText });
+      await typeText(bubble, reply);
 
     } catch (err) {
       removeSearching();

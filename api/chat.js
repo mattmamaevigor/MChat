@@ -7,7 +7,12 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const { messages } = req.body;
+    let { messages } = req.body;
+
+    // Оставляем только последние 10 сообщений чтобы не превышать лимит
+    if (messages.length > 11) {
+      messages = [messages[0], ...messages.slice(-10)];
+    }
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",

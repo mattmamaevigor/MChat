@@ -1,3 +1,11 @@
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4mb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -8,8 +16,6 @@ export default async function handler(req, res) {
 
   try {
     let { messages } = req.body;
-
-    // Оставляем только последние 10 сообщений чтобы не превышать лимит
     if (messages.length > 11) {
       messages = [messages[0], ...messages.slice(-10)];
     }

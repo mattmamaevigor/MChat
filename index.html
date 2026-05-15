@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MotaAI v2.5</title>
+  <title>MChat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -31,7 +31,6 @@
       overflow: hidden;
     }
 
-    /* ── SIDEBAR ── */
     #sidebar {
       width: var(--sidebar-w);
       background: var(--bg2);
@@ -106,7 +105,6 @@
       font-size: 13px;
       color: #8898b8;
       transition: background 0.15s, color 0.15s;
-      position: relative;
     }
     .chat-item:hover { background: var(--bg3); color: var(--text); }
     .chat-item.active {
@@ -152,16 +150,13 @@
 
     .stat-val { color: var(--accent); }
 
-    /* ── MAIN ── */
     #main {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
     }
 
-    /* mobile menu toggle */
     #menuBtn {
       display: none;
       position: fixed;
@@ -205,7 +200,6 @@
       white-space: nowrap;
     }
 
-    /* ── CHAT AREA ── */
     #chat {
       flex: 1;
       overflow-y: auto;
@@ -217,22 +211,16 @@
     #chat::-webkit-scrollbar { width: 4px; }
     #chat::-webkit-scrollbar-thumb { background: #1a2438; border-radius: 4px; }
 
-    /* welcome */
     .welcome {
       text-align: center;
       margin: auto;
       padding: 40px 20px;
       max-width: 480px;
     }
-    .welcome-icon {
-      font-size: 42px;
-      margin-bottom: 14px;
-      display: block;
-    }
+    .welcome-icon { font-size: 42px; margin-bottom: 14px; display: block; }
     .welcome h2 {
       font-size: 28px; font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 10px;
+      line-height: 1.2; margin-bottom: 10px;
       letter-spacing: -0.5px;
     }
     .welcome h2 span { color: var(--accent); }
@@ -255,7 +243,6 @@
     }
     .chip:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* messages */
     .msg-row {
       display: flex;
       align-items: flex-end;
@@ -315,7 +302,6 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* code blocks inside bubbles */
     .bubble code {
       font-family: 'JetBrains Mono', monospace;
       background: rgba(0,0,0,0.35);
@@ -348,7 +334,6 @@
       0%, 100% { opacity: 1; } 50% { opacity: 0; }
     }
 
-    /* searching indicator */
     .searching {
       display: flex;
       align-items: center;
@@ -376,7 +361,6 @@
       40% { transform: scale(1); opacity: 1; }
     }
 
-    /* ── INPUT ── */
     .input-area {
       padding: 14px 20px;
       border-top: 1px solid var(--border);
@@ -422,7 +406,6 @@
     #sendBtn:active { transform: scale(0.94); }
     #sendBtn:disabled { opacity: 0.3; cursor: default; }
 
-    /* ── MOBILE ── */
     @media (max-width: 680px) {
       #sidebar {
         position: fixed;
@@ -432,16 +415,10 @@
       #sidebar.open { transform: translateX(0); box-shadow: 4px 0 30px rgba(0,0,0,0.6); }
       #menuBtn { display: flex; }
       .topbar { padding-left: 58px; }
-      #overlay {
-        display: none;
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 99;
-      }
+      #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
       #overlay.show { display: block; }
     }
 
-    /* empty history */
     .no-chats {
       text-align: center;
       padding: 20px 10px;
@@ -460,13 +437,12 @@
   </svg>
 </button>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-header">
-    <div class="logo">M</div>
+    <div class="logo">MC</div>
     <div class="brand">
-      <h1>Mota<span>AI</span></h1>
-      <small>v2.5 · compound-beta</small>
+      <h1>M<span>Chat</span></h1>
+      <small>v3.0 · compound-beta</small>
     </div>
   </div>
 
@@ -496,28 +472,13 @@
   </div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
   <div class="topbar">
     <div class="chat-title-display" id="chatTitleDisplay">Новый чат</div>
     <div class="model-pill">🌐 compound-beta</div>
   </div>
 
-  <div id="chat">
-    <div class="welcome" id="welcome">
-      <span class="welcome-icon">✦</span>
-      <h2>Привет! Я <span>MotaAI</span></h2>
-      <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
-      <div class="chips">
-        <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
-        <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-        <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс валют</div>
-        <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
-        <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
-        <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
-      </div>
-    </div>
-  </div>
+  <div id="chat"></div>
 
   <div class="input-area">
     <div class="input-wrap">
@@ -534,12 +495,11 @@
 </div>
 
 <script>
-  const WORKER_URL = "https://motaai.mattmamaev.workers.dev";
-  const SYSTEM = "Ты — MotaAI, умный и дружелюбный ИИ-помощник. У тебя есть доступ к интернету — используй его когда нужна актуальная информация. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
-  const STORAGE_KEY = "motaai_chats_v2";
+  const WORKER_URL = "/api/chat";
+  const SYSTEM = "Ты — MChat, умный и дружелюбный ИИ-помощник. У тебя есть доступ к интернету — используй его когда нужна актуальная информация. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
+  const STORAGE_KEY = "mchat_chats_v3";
 
-  // ── STATE ──────────────────────────────────────────────────
-  let chats = [];          // [{id, title, messages: [{role,content}], createdAt}]
+  let chats = [];
   let activeChatId = null;
   let sending = false;
 
@@ -548,7 +508,6 @@
   const chatEl  = $("chat");
   const sendBtn = $("sendBtn");
 
-  // ── STORAGE ────────────────────────────────────────────────
   function saveChats() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); } catch(e) {}
     updateStats();
@@ -561,7 +520,6 @@
     } catch(e) { chats = []; }
   }
 
-  // ── CHAT MANAGEMENT ────────────────────────────────────────
   function newChat() {
     const id = "chat_" + Date.now();
     chats.unshift({ id, title: "Новый чат", messages: [], createdAt: Date.now() });
@@ -583,23 +541,15 @@
   function deleteChat(id, e) {
     e.stopPropagation();
     chats = chats.filter(c => c.id !== id);
-    if (activeChatId === id) {
-      activeChatId = chats.length ? chats[0].id : null;
-    }
+    if (activeChatId === id) activeChatId = chats.length ? chats[0].id : null;
     saveChats();
     renderSidebar();
     renderChat();
   }
 
-  function getActive() {
-    return chats.find(c => c.id === activeChatId);
-  }
+  function getActive() { return chats.find(c => c.id === activeChatId); }
+  function autoTitle(text) { return text.length > 36 ? text.slice(0, 36) + "…" : text; }
 
-  function autoTitle(text) {
-    return text.length > 36 ? text.slice(0, 36) + "…" : text;
-  }
-
-  // ── RENDER SIDEBAR ─────────────────────────────────────────
   function renderSidebar() {
     const list = $("chatList");
     if (!chats.length) {
@@ -610,7 +560,7 @@
       <div class="chat-item ${c.id === activeChatId ? 'active' : ''}" onclick="switchChat('${c.id}')">
         <span style="font-size:14px">💬</span>
         <span class="chat-item-title">${escHtml(c.title)}</span>
-        <button class="chat-item-del" onclick="deleteChat('${c.id}', event)" title="Удалить">✕</button>
+        <button class="chat-item-del" onclick="deleteChat('${c.id}', event)">✕</button>
       </div>
     `).join("");
   }
@@ -620,28 +570,25 @@
     $("statMsgs").textContent = chats.reduce((s, c) => s + c.messages.length, 0);
   }
 
-  // ── RENDER CHAT ────────────────────────────────────────────
   function renderChat() {
     const chat = getActive();
     chatEl.innerHTML = "";
 
     if (!chat || !chat.messages.length) {
-      // show welcome
-      const w = document.createElement("div");
-      w.className = "welcome"; w.id = "welcome";
-      w.innerHTML = `
-        <span class="welcome-icon">✦</span>
-        <h2>Привет! Я <span>MotaAI</span></h2>
-        <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
-        <div class="chips">
-          <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
-          <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-          <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
-          <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
-          <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
-          <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
+      chatEl.innerHTML = `
+        <div class="welcome">
+          <span class="welcome-icon">✦</span>
+          <h2>Привет! Я <span>MChat</span></h2>
+          <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
+          <div class="chips">
+            <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
+            <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
+            <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
+            <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
+            <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
+            <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
+          </div>
         </div>`;
-      chatEl.appendChild(w);
       $("chatTitleDisplay").textContent = "Новый чат";
     } else {
       $("chatTitleDisplay").textContent = chat.title;
@@ -652,17 +599,14 @@
     chatEl.scrollTop = chatEl.scrollHeight;
   }
 
-  // ── BUBBLE ─────────────────────────────────────────────────
   function addBubble(role, text, animate = true) {
-    chatEl.querySelector("#welcome")?.remove();
-
     const row = document.createElement("div");
     row.className = "msg-row " + role;
     if (!animate) row.style.animation = "none";
 
     const av = document.createElement("div");
     av.className = "avatar " + (role === "ai" ? "ai-av" : "user-av");
-    av.textContent = role === "ai" ? "M" : "У";
+    av.textContent = role === "ai" ? "MC" : "Я";
 
     const bub = document.createElement("div");
     bub.className = "bubble " + role;
@@ -676,20 +620,17 @@
   }
 
   function formatText(text) {
-    // simple code block formatting
     let html = escHtml(text);
     html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-      `<pre><code>${code.trim()}</code></pre>`
-    );
+      `<pre><code>${code.trim()}</code></pre>`);
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
     return html;
   }
 
   function escHtml(s) {
-    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
 
-  // ── TYPING ANIMATION ───────────────────────────────────────
   function typeText(bubble, text, speed = 10) {
     return new Promise(resolve => {
       bubble.innerHTML = "";
@@ -713,29 +654,24 @@
     });
   }
 
-  // ── SEARCHING INDICATOR ────────────────────────────────────
   function showSearching() {
     removeSearching();
     const div = document.createElement("div");
     div.className = "searching"; div.id = "searching";
-    div.innerHTML = `
-      <div class="search-dots">
-        <div class="search-dot"></div>
-        <div class="search-dot"></div>
-        <div class="search-dot"></div>
-      </div>
-      Ищу в интернете...`;
+    div.innerHTML = `<div class="search-dots">
+      <div class="search-dot"></div>
+      <div class="search-dot"></div>
+      <div class="search-dot"></div>
+    </div> Ищу в интернете...`;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
   }
   function removeSearching() { $("searching")?.remove(); }
 
-  // ── SEND ───────────────────────────────────────────────────
   async function send() {
     const text = input.value.trim();
     if (!text || sending) return;
 
-    // ensure active chat exists
     if (!activeChatId) newChat();
     const chat = getActive();
     if (!chat) return;
@@ -743,7 +679,6 @@
     input.value = ""; input.style.height = "auto";
     sendBtn.disabled = true; sending = true;
 
-    // auto-title on first user message
     if (!chat.messages.length) {
       chat.title = autoTitle(text);
       $("chatTitleDisplay").textContent = chat.title;
@@ -768,11 +703,11 @@
       removeSearching();
 
       if (!res.ok || data.error) {
-        const errBub = document.createElement("div");
-        errBub.className = "msg-row ai";
-        errBub.innerHTML = `<div class="avatar ai-av">M</div>
+        const row = document.createElement("div");
+        row.className = "msg-row ai";
+        row.innerHTML = `<div class="avatar ai-av">MC</div>
           <div class="bubble error">⚠️ ${escHtml(data?.error?.message || "Ошибка сервера")}</div>`;
-        chatEl.appendChild(errBub);
+        chatEl.appendChild(row);
         chat.messages.pop();
         saveChats();
         return;
@@ -788,11 +723,11 @@
 
     } catch (err) {
       removeSearching();
-      const errBub = document.createElement("div");
-      errBub.className = "msg-row ai";
-      errBub.innerHTML = `<div class="avatar ai-av">M</div>
+      const row = document.createElement("div");
+      row.className = "msg-row ai";
+      row.innerHTML = `<div class="avatar ai-av">MC</div>
         <div class="bubble error">⚠️ Нет соединения. Проверь интернет.</div>`;
-      chatEl.appendChild(errBub);
+      chatEl.appendChild(row);
       chat.messages.pop();
       saveChats();
     } finally {
@@ -806,7 +741,6 @@
     input.value = text; send();
   }
 
-  // ── INPUT AUTO-RESIZE ──────────────────────────────────────
   input.addEventListener("input", () => {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 130) + "px";
@@ -815,7 +749,6 @@
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   });
 
-  // ── SIDEBAR MOBILE ─────────────────────────────────────────
   function toggleSidebar() {
     $("sidebar").classList.toggle("open");
     $("overlay").classList.toggle("show");
@@ -825,12 +758,9 @@
     $("overlay").classList.remove("show");
   }
 
-  // ── INIT ───────────────────────────────────────────────────
   loadChats();
-  if (chats.length) {
-    activeChatId = chats[0].id;
-    renderChat();
-  }
+  if (chats.length) { activeChatId = chats[0].id; }
+  renderChat();
   renderSidebar();
   updateStats();
 </script>

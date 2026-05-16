@@ -208,7 +208,8 @@
       padding: 40px 20px;
       max-width: 480px;
     }
-    .welcome-icon { font-size: 42px; margin-bottom: 14px; display: block; }
+    .welcome-icon { font-size: 42px; margin-bottom: 14px; display: block; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
     .welcome h2 {
       font-size: 28px; font-weight: 800;
       line-height: 1.2; margin-bottom: 10px;
@@ -317,35 +318,29 @@
       vertical-align: text-bottom;
       animation: blink 0.7s ease-in-out infinite;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; } 50% { opacity: 0; }
-    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .searching {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .thinking {
+      display: flex; align-items: center; gap: 8px;
       padding: 10px 14px;
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 12px;
-      font-size: 13px;
-      color: var(--muted);
+      font-size: 13px; color: var(--muted);
       animation: fadeUp 0.2s ease;
       align-self: flex-start;
     }
-    .search-dots { display: flex; gap: 4px; }
-    .search-dot {
+    .think-dots { display: flex; gap: 4px; }
+    .think-dot {
       width: 5px; height: 5px;
-      background: var(--accent);
-      border-radius: 50%;
+      background: var(--accent); border-radius: 50%;
       animation: dotPulse 1.4s ease-in-out infinite;
     }
-    .search-dot:nth-child(2) { animation-delay: 0.2s; }
-    .search-dot:nth-child(3) { animation-delay: 0.4s; }
+    .think-dot:nth-child(2) { animation-delay: 0.2s; }
+    .think-dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes dotPulse {
-      0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
-      40% { transform: scale(1); opacity: 1; }
+      0%,80%,100%{transform:scale(0.6);opacity:0.3}
+      40%{transform:scale(1);opacity:1}
     }
 
     .input-area {
@@ -356,59 +351,42 @@
       flex-shrink: 0;
     }
     .input-wrap {
-      flex: 1;
-      background: var(--bg2);
+      flex: 1; background: var(--bg2);
       border: 1px solid rgba(110,255,200,0.18);
       border-radius: 14px;
       display: flex; align-items: flex-end;
       transition: border-color 0.2s;
     }
     .input-wrap:focus-within { border-color: rgba(110,255,200,0.45); }
-
     textarea {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 14.5px;
+      flex: 1; background: transparent; border: none;
+      color: var(--text); font-size: 14.5px;
       font-family: 'Syne', sans-serif;
-      padding: 12px 14px;
-      resize: none; outline: none;
-      max-height: 130px;
-      line-height: 1.55;
+      padding: 12px 14px; resize: none; outline: none;
+      max-height: 130px; line-height: 1.55;
     }
     textarea::placeholder { color: var(--muted); }
-
     #sendBtn {
       width: 42px; height: 42px;
       border-radius: 11px; border: none;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: opacity 0.2s, transform 0.1s;
+      flex-shrink: 0; transition: opacity 0.2s, transform 0.1s;
     }
     #sendBtn:hover { opacity: 0.85; }
     #sendBtn:active { transform: scale(0.94); }
     #sendBtn:disabled { opacity: 0.3; cursor: default; }
 
     @media (max-width: 680px) {
-      #sidebar {
-        position: fixed;
-        top: 0; left: 0; bottom: 0;
-        transform: translateX(-100%);
-      }
-      #sidebar.open { transform: translateX(0); box-shadow: 4px 0 30px rgba(0,0,0,0.6); }
-      #menuBtn { display: flex; }
+      #sidebar { position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%); }
+      #sidebar.open { transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,0.6); }
+      #menuBtn { display:flex; }
       .topbar { padding-left: 58px; }
-      #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-      #overlay.show { display: block; }
+      #overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99; }
+      #overlay.show { display:block; }
     }
-
-    .no-chats {
-      text-align: center; padding: 20px 10px;
-      font-size: 12px; color: var(--muted); line-height: 1.7;
-    }
+    .no-chats { text-align:center;padding:20px 10px;font-size:12px;color:var(--muted);line-height:1.7; }
   </style>
 </head>
 <body>
@@ -427,34 +405,21 @@
     <div class="logo">MC</div>
     <div class="brand">
       <h1>M<span>Chat</span></h1>
-      <small>v3.0 · Gemini 2.5 Flash</small>
+      <small>v3.1 · Gemini 2.5 Flash</small>
     </div>
   </div>
-
   <button id="newChatBtn" onclick="newChat()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
     Новый чат
   </button>
-
   <div class="section-label">История чатов</div>
   <div id="chatList"></div>
-
   <div class="sidebar-footer">
-    <div class="stat-row">
-      <span>Чатов сохранено</span>
-      <span class="stat-val" id="statChats">0</span>
-    </div>
-    <div class="stat-row">
-      <span>Сообщений всего</span>
-      <span class="stat-val" id="statMsgs">0</span>
-    </div>
-    <div class="stat-row">
-      <span>Модель</span>
-      <span class="stat-val">Gemini ✦</span>
-    </div>
+    <div class="stat-row"><span>Чатов сохранено</span><span class="stat-val" id="statChats">0</span></div>
+    <div class="stat-row"><span>Сообщений всего</span><span class="stat-val" id="statMsgs">0</span></div>
+    <div class="stat-row"><span>Модель</span><span class="stat-val">Gemini ✦</span></div>
   </div>
 </div>
 
@@ -463,9 +428,7 @@
     <div class="chat-title-display" id="chatTitleDisplay">Новый чат</div>
     <div class="model-pill">✦ Gemini 2.5 Flash</div>
   </div>
-
   <div id="chat"></div>
-
   <div class="input-area">
     <div class="input-wrap">
       <textarea id="input" rows="1" placeholder="Напиши сообщение..."></textarea>
@@ -483,266 +446,184 @@
 <script>
   const API = "/api/chat";
   const SYSTEM = "Ты — MChat, умный и дружелюбный ИИ-помощник на базе Gemini 2.5 Flash. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
-  const STORAGE_KEY = "mchat_v3";
+  const STORAGE_KEY = "mchat_v31";
 
-  let chats = [];
-  let activeChatId = null;
-  let sending = false;
-
+  let chats = [], activeChatId = null, sending = false;
   const $ = id => document.getElementById(id);
-  const input   = $("input");
-  const chatEl  = $("chat");
-  const sendBtn = $("sendBtn");
+  const input = $("input"), chatEl = $("chat"), sendBtn = $("sendBtn");
 
-  function saveChats() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); } catch(e) {}
-    updateStats();
-  }
+  // ── STORAGE ──
+  function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); } catch(e){} updateStats(); }
+  function load() { try { const r=localStorage.getItem(STORAGE_KEY); if(r) chats=JSON.parse(r); } catch(e){chats=[];} }
 
-  function loadChats() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) chats = JSON.parse(raw);
-    } catch(e) { chats = []; }
-  }
-
+  // ── CHAT MANAGEMENT ──
   function newChat() {
-    const id = "c" + Date.now();
-    chats.unshift({ id, title: "Новый чат", messages: [] });
+    const id = "c"+Date.now();
+    chats.unshift({id, title:"Новый чат", messages:[]});
     activeChatId = id;
-    saveChats(); renderSidebar(); renderChat(); closeSidebar();
-    input.focus();
+    save(); renderSidebar(); renderChat(); closeSidebar(); input.focus();
   }
-
-  function switchChat(id) {
-    activeChatId = id;
-    renderSidebar(); renderChat(); closeSidebar();
-  }
-
+  function switchChat(id) { activeChatId=id; renderSidebar(); renderChat(); closeSidebar(); }
   function deleteChat(id, e) {
     e.stopPropagation();
-    chats = chats.filter(c => c.id !== id);
-    if (activeChatId === id) activeChatId = chats.length ? chats[0].id : null;
-    saveChats(); renderSidebar(); renderChat();
+    chats = chats.filter(c=>c.id!==id);
+    if(activeChatId===id) activeChatId = chats.length ? chats[0].id : null;
+    save(); renderSidebar(); renderChat();
   }
+  const getActive = () => chats.find(c=>c.id===activeChatId);
 
-  function getActive() { return chats.find(c => c.id === activeChatId); }
-  function autoTitle(t) { return t.length > 36 ? t.slice(0, 36) + "…" : t; }
-
+  // ── RENDER SIDEBAR ──
   function renderSidebar() {
     const list = $("chatList");
-    if (!chats.length) {
-      list.innerHTML = '<div class="no-chats">Нет чатов.<br>Нажми «Новый чат».</div>';
-      return;
-    }
-    list.innerHTML = chats.map(c => `
-      <div class="chat-item ${c.id === activeChatId ? 'active' : ''}" onclick="switchChat('${c.id}')">
+    if(!chats.length){ list.innerHTML='<div class="no-chats">Нет чатов.<br>Нажми «Новый чат».</div>'; return; }
+    list.innerHTML = chats.map(c=>`
+      <div class="chat-item ${c.id===activeChatId?'active':''}" onclick="switchChat('${c.id}')">
         <span style="font-size:14px">💬</span>
-        <span class="chat-item-title">${escHtml(c.title)}</span>
+        <span class="chat-item-title">${esc(c.title)}</span>
         <button class="chat-item-del" onclick="deleteChat('${c.id}',event)">✕</button>
-      </div>`).join("");
+      </div>`).join('');
   }
-
   function updateStats() {
     $("statChats").textContent = chats.length;
-    $("statMsgs").textContent = chats.reduce((s, c) => s + c.messages.length, 0);
+    $("statMsgs").textContent = chats.reduce((s,c)=>s+c.messages.length,0);
   }
 
+  // ── RENDER CHAT ──
   function renderChat() {
     const chat = getActive();
     chatEl.innerHTML = "";
-    if (!chat || !chat.messages.length) {
-      chatEl.innerHTML = `
-        <div class="welcome">
-          <span class="welcome-icon">✦</span>
-          <h2>Привет! Я <span>MChat</span></h2>
-          <p>Умный помощник на базе Gemini 2.5 Flash.<br>Спроси что угодно — отвечу честно и быстро.</p>
-          <div class="chips">
-            <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
-            <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-            <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
-            <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
-            <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
-            <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
-          </div>
-        </div>`;
-      $("chatTitleDisplay").textContent = "Новый чат";
+    if(!chat||!chat.messages.length){
+      chatEl.innerHTML=`<div class="welcome">
+        <span class="welcome-icon">✦</span>
+        <h2>Привет! Я <span>MChat</span></h2>
+        <p>Умный помощник на базе Gemini 2.5 Flash.<br>Спроси что угодно — отвечу честно и быстро.</p>
+        <div class="chips">
+          <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
+          <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
+          <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
+          <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
+          <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
+          <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
+        </div></div>`;
+      $("chatTitleDisplay").textContent="Новый чат";
     } else {
-      $("chatTitleDisplay").textContent = chat.title;
-      chat.messages.forEach(m => {
-        if (m.role !== "system") addBubble(m.role === "user" ? "user" : "ai", m.content, false);
-      });
+      $("chatTitleDisplay").textContent=chat.title;
+      chat.messages.forEach(m=>{ if(m.role!=="system") addBubble(m.role==="user"?"user":"ai",m.content,false); });
     }
-    chatEl.scrollTop = chatEl.scrollHeight;
+    chatEl.scrollTop=chatEl.scrollHeight;
   }
 
-  function addBubble(role, text, animate = true) {
-    const row = document.createElement("div");
-    row.className = "msg-row " + role;
-    if (!animate) row.style.animation = "none";
-
-    const av = document.createElement("div");
-    av.className = "avatar " + (role === "ai" ? "ai-av" : "user-av");
-    av.textContent = role === "ai" ? "MC" : "Я";
-
-    const bub = document.createElement("div");
-    bub.className = "bubble " + role;
-    bub.innerHTML = role === "user" ? escHtml(text) : formatText(text);
-
-    row.appendChild(av);
-    row.appendChild(bub);
-    chatEl.appendChild(row);
-    chatEl.scrollTop = chatEl.scrollHeight;
+  // ── BUBBLES ──
+  function addBubble(role, text, animate=true) {
+    const row=document.createElement("div"); row.className="msg-row "+role;
+    if(!animate) row.style.animation="none";
+    const av=document.createElement("div"); av.className="avatar "+(role==="ai"?"ai-av":"user-av");
+    av.textContent=role==="ai"?"MC":"Я";
+    const bub=document.createElement("div"); bub.className="bubble "+role;
+    bub.innerHTML=role==="user"?esc(text):fmt(text);
+    row.appendChild(av); row.appendChild(bub);
+    chatEl.appendChild(row); chatEl.scrollTop=chatEl.scrollHeight;
     return bub;
   }
 
-  function formatText(text) {
-    let html = escHtml(text);
-    html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-      `<pre><code>${code.trim()}</code></pre>`);
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    return html;
+  function fmt(text) {
+    let h=esc(text);
+    h=h.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${c.trim()}</code></pre>`);
+    h=h.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+    return h;
   }
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  function escHtml(s) {
-    return String(s)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;");
-  }
-
-  function typeText(bubble, text) {
+  // ── TYPING ANIMATION ──
+  function typeText(bub, text, speed=8) {
     return new Promise(resolve => {
-      bubble.innerHTML = "";
-      const cursor = document.createElement("span");
-      cursor.className = "cursor";
-      bubble.appendChild(cursor);
-      let i = 0;
-      const tick = setInterval(() => {
-        if (i < text.length) {
-          bubble.innerHTML = formatText(text.slice(0, i + 1));
-          bubble.appendChild(cursor);
-          i++;
-          chatEl.scrollTop = chatEl.scrollHeight;
+      bub.innerHTML="";
+      const cur=document.createElement("span"); cur.className="cursor"; bub.appendChild(cur);
+      let i=0;
+      const tick=setInterval(()=>{
+        if(i<text.length){
+          bub.innerHTML=fmt(text.slice(0,i+1));
+          bub.appendChild(cur); i++;
+          chatEl.scrollTop=chatEl.scrollHeight;
         } else {
-          clearInterval(tick);
-          cursor.remove();
-          bubble.innerHTML = formatText(text);
-          resolve();
+          clearInterval(tick); cur.remove();
+          bub.innerHTML=fmt(text); resolve();
         }
-      }, 10);
+      }, speed);
     });
   }
 
-  function showSearching() {
-    removeSearching();
-    const div = document.createElement("div");
-    div.className = "searching"; div.id = "searching";
-    div.innerHTML = `<div class="search-dots">
-      <div class="search-dot"></div>
-      <div class="search-dot"></div>
-      <div class="search-dot"></div>
-    </div>Думаю...`;
-    chatEl.appendChild(div);
-    chatEl.scrollTop = chatEl.scrollHeight;
+  function showThinking() {
+    removeThinking();
+    const d=document.createElement("div"); d.className="thinking"; d.id="thinking";
+    d.innerHTML=`<div class="think-dots"><div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div></div>Думаю...`;
+    chatEl.appendChild(d); chatEl.scrollTop=chatEl.scrollHeight;
   }
-  function removeSearching() { $("searching")?.remove(); }
+  const removeThinking = () => $("thinking")?.remove();
 
+  // ── SEND ──
   async function send() {
-    const text = input.value.trim();
-    if (!text || sending) return;
+    const text=input.value.trim();
+    if(!text||sending) return;
+    if(!activeChatId) newChat();
+    const chat=getActive(); if(!chat) return;
 
-    if (!activeChatId) newChat();
-    const chat = getActive();
-    if (!chat) return;
+    input.value=""; input.style.height="auto";
+    sendBtn.disabled=true; sending=true;
 
-    input.value = ""; input.style.height = "auto";
-    sendBtn.disabled = true; sending = true;
-
-    if (!chat.messages.length) {
-      chat.title = autoTitle(text);
-      $("chatTitleDisplay").textContent = chat.title;
+    if(!chat.messages.length){
+      chat.title=text.length>36?text.slice(0,36)+"…":text;
+      $("chatTitleDisplay").textContent=chat.title;
     }
-
-    chat.messages.push({ role: "user", content: text });
-    saveChats();
-    addBubble("user", text);
-    renderSidebar();
-    showSearching();
+    chat.messages.push({role:"user",content:text});
+    save(); addBubble("user",text); renderSidebar(); showThinking();
 
     try {
       const res = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "system", content: SYSTEM }, ...chat.messages]
-        }),
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({messages:[{role:"system",content:SYSTEM},...chat.messages.slice(-12)]})
       });
 
+      removeThinking();
       const data = await res.json();
-      removeSearching();
 
-      if (!res.ok || data.error) {
-        const row = document.createElement("div");
-        row.className = "msg-row ai";
-        row.innerHTML = `<div class="avatar ai-av">MC</div>
-          <div class="bubble error">⚠️ ${escHtml(data?.error?.message || "Ошибка")}</div>`;
-        chatEl.appendChild(row);
-        chat.messages.pop();
-        saveChats();
-        return;
+      if(!res.ok||data.error){
+        addErrBubble(data?.error?.message||"Ошибка сервера");
+        chat.messages.pop(); save(); return;
       }
 
-      const reply = data.choices?.[0]?.message?.content || "Нет ответа.";
-      chat.messages.push({ role: "assistant", content: reply });
-      saveChats();
-      renderSidebar();
+      const reply=data.choices?.[0]?.message?.content||"Нет ответа.";
+      chat.messages.push({role:"assistant",content:reply});
+      save(); renderSidebar();
 
-      const bub = addBubble("ai", "");
+      const bub=addBubble("ai","");
       await typeText(bub, reply);
 
-    } catch (err) {
-      removeSearching();
-      const row = document.createElement("div");
-      row.className = "msg-row ai";
-      row.innerHTML = `<div class="avatar ai-av">MC</div>
-        <div class="bubble error">⚠️ Нет соединения. Проверь интернет.</div>`;
-      chatEl.appendChild(row);
-      chat.messages.pop();
-      saveChats();
+    } catch(err) {
+      removeThinking();
+      addErrBubble("Нет соединения. Проверь интернет.");
+      chat.messages.pop(); save();
     } finally {
-      sendBtn.disabled = false; sending = false;
-      input.focus();
+      sendBtn.disabled=false; sending=false; input.focus();
     }
   }
 
-  function ask(text) {
-    if (!activeChatId) newChat();
-    input.value = text; send();
+  function addErrBubble(msg) {
+    const row=document.createElement("div"); row.className="msg-row ai";
+    row.innerHTML=`<div class="avatar ai-av">MC</div><div class="bubble error">⚠️ ${esc(msg)}</div>`;
+    chatEl.appendChild(row); chatEl.scrollTop=chatEl.scrollHeight;
   }
+  const ask = t => { if(!activeChatId) newChat(); input.value=t; send(); };
 
-  input.addEventListener("input", () => {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 130) + "px";
-  });
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  });
+  input.addEventListener("input",()=>{ input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,130)+"px"; });
+  input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();} });
+  const toggleSidebar=()=>{ $("sidebar").classList.toggle("open"); $("overlay").classList.toggle("show"); };
+  const closeSidebar=()=>{ $("sidebar").classList.remove("open"); $("overlay").classList.remove("show"); };
 
-  function toggleSidebar() {
-    $("sidebar").classList.toggle("open");
-    $("overlay").classList.toggle("show");
-  }
-  function closeSidebar() {
-    $("sidebar").classList.remove("open");
-    $("overlay").classList.remove("show");
-  }
-
-  loadChats();
-  if (chats.length) activeChatId = chats[0].id;
-  renderChat();
-  renderSidebar();
-  updateStats();
+  load();
+  if(chats.length) activeChatId=chats[0].id;
+  renderChat(); renderSidebar(); updateStats();
 </script>
 </body>
 </html>

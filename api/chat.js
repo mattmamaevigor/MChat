@@ -1,99 +1,110 @@
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+export const config = { runtime: "edge" };
 
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
+export default async function handler(req) {
+  const cors = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  if (req.method === "OPTIONS") return new Response(null, { headers: cors });
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: cors });
+
+  const json = (data, status = 200) =>
+    new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json", ...cors } });
 
   try {
-    const { messages, temperature = 0.7 } = req.body;
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: { message: "No messages" } });
+    const { messages, temperature = 0.7 } = await req.json();
+
+    if (!messages || !Array.isArray(messages)) return json({ error: { message: "No messages" } }, 400);
+
+    const systemMsg = messages.find(m => m.role === "system")?.content || "";
+    const history = messages
+      .filter(m => m.role !== "system")
+      .slice(-12)
+      .map(m => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: String(m.content || "").slice(0, 4000),
+      }));
+
+    if (!history.length || history.at(-1).role !== "user") {
+      return json({ error: { message: "Last message must be from user" } }, 400);
     }
 
-    const systemPrompt = messages.find(m => m.role === "system")?.content || "";
-    let history = messages.filter(m => m.role !== "system");
-    if (history.length > 12) history = history.slice(-12);
+    const openRouterMessages = [];
+    if (systemMsg) openRouterMessages.push({ role: "system", content: systemMsg });
+    openRouterMessages.push(...history);
 
-    // Build Gemini format messages (with image support)
-    const geminiMessages = history.map(m => {
-      const role = m.role === "assistant" ? "model" : "user";
-      const parts = [];
-
-      if (m.imageBase64 && m.imageMime) {
-        parts.push({ inline_data: { mime_type: m.imageMime, data: m.imageBase64 } });
-      }
-
-      if (m.content) {
-        parts.push({ text: String(m.content).slice(0, 4000) });
-      }
-
-      return { role, parts: parts.length ? parts : [{ text: "" }] };
-    });
-
-    // Last message must be user
-    if (!geminiMessages.length || geminiMessages[geminiMessages.length - 1].role !== "user") {
-      return res.status(400).json({ error: { message: "Last message must be from user" } });
-    }
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
-
-    const geminiRes = await fetch(url, {
+    const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://mchat.vercel.app",
+        "X-Title": "MChat",
+      },
       body: JSON.stringify({
-        system_instruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined,
-        contents: geminiMessages,
-        generationConfig: {
-          maxOutputTokens: 8192,
-          temperature: Math.min(Math.max(parseFloat(temperature) || 0.7, 0), 2),
-        }
+        model: "deepseek/deepseek-r1:free",
+        messages: openRouterMessages,
+        stream: true,
+        temperature: Math.min(Math.max(parseFloat(temperature) || 0.7, 0), 2),
+        max_tokens: 8192,
       }),
     });
 
-    if (!geminiRes.ok) {
-      const err = await geminiRes.json().catch(() => ({}));
-      return res.status(geminiRes.status).json({
-        error: { message: err?.error?.message || "Gemini error" }
-      });
+    if (!orRes.ok) {
+      const err = await orRes.json().catch(() => ({}));
+      return json({ error: { message: err?.error?.message || `OpenRouter error ${orRes.status}` } }, orRes.status);
     }
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("X-Accel-Buffering", "no");
+    // Edge streaming — трансформируем OpenAI SSE → наш SSE формат
+    const stream = new TransformStream();
+    const writer = stream.writable.getWriter();
+    const encoder = new TextEncoder();
 
-    const reader = geminiRes.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-      for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
-        const data = line.slice(6).trim();
-        if (!data || data === "[DONE]") continue;
-        try {
-          const json = JSON.parse(data);
-          const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) res.write(`data: ${JSON.stringify({ text })}\n\n`);
-        } catch {}
+    (async () => {
+      const reader = orRes.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const data = line.slice(6).trim();
+            if (data === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(data);
+              // DeepSeek R1 иногда возвращает reasoning в отдельном поле
+              const text = parsed.choices?.[0]?.delta?.content;
+              if (text) {
+                await writer.write(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+              }
+            } catch {}
+          }
+        }
+        await writer.write(encoder.encode("data: [DONE]\n\n"));
+      } catch (e) {
+        await writer.write(encoder.encode(`data: ${JSON.stringify({ error: e.message })}\n\n`));
+      } finally {
+        await writer.close();
       }
-    }
+    })();
 
-    res.write("data: [DONE]\n\n");
-    res.end();
+    return new Response(stream.readable, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "X-Accel-Buffering": "no",
+        ...cors,
+      },
+    });
 
   } catch (err) {
-    if (!res.headersSent) {
-      res.status(500).json({ error: { message: err.message || "Server error" } });
-    } else {
-      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
-      res.end();
-    }
+    return json({ error: { message: err.message || "Server error" } }, 500);
   }
 }

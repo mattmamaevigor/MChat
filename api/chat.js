@@ -8,7 +8,6 @@ export default async function handler(req, res) {
 
   try {
     const { messages } = req.body;
-
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: { message: "No messages" } });
     }
@@ -26,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: { message: "Last message must be from user" } });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
 
     const geminiRes = await fetch(url, {
       method: "POST",
@@ -34,17 +33,14 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         system_instruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined,
         contents: geminiMessages,
-        generationConfig: {
-          maxOutputTokens: 8192,
-          temperature: 0.7,
-        }
+        generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
       }),
     });
 
     if (!geminiRes.ok) {
       const err = await geminiRes.json().catch(() => ({}));
       return res.status(geminiRes.status).json({
-        error: { message: err?.error?.message || "Gemini Pro error" }
+        error: { message: err?.error?.message || "Gemini error" }
       });
     }
 
@@ -59,22 +55,17 @@ export default async function handler(req, res) {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split("\n");
       buffer = lines.pop();
-
       for (const line of lines) {
         if (!line.startsWith("data: ")) continue;
         const data = line.slice(6).trim();
         if (!data || data === "[DONE]") continue;
-
         try {
           const json = JSON.parse(data);
           const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            res.write(`data: ${JSON.stringify({ text })}\n\n`);
-          }
+          if (text) res.write(`data: ${JSON.stringify({ text })}\n\n`);
         } catch {}
       }
     }
@@ -83,7 +74,6 @@ export default async function handler(req, res) {
     res.end();
 
   } catch (err) {
-    console.error(err);
     if (!res.headersSent) {
       res.status(500).json({ error: { message: err.message || "Server error" } });
     } else {

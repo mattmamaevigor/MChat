@@ -427,7 +427,7 @@
     <div class="logo">MC</div>
     <div class="brand">
       <h1>M<span>Chat</span></h1>
-      <small>v3.0 · compound-beta</small>
+      <small>v3.0 · Gemini 2.5 Flash</small>
     </div>
   </div>
 
@@ -453,7 +453,7 @@
     </div>
     <div class="stat-row">
       <span>Модель</span>
-      <span class="stat-val">Groq ⚡</span>
+      <span class="stat-val">Gemini ✦</span>
     </div>
   </div>
 </div>
@@ -461,7 +461,7 @@
 <div id="main">
   <div class="topbar">
     <div class="chat-title-display" id="chatTitleDisplay">Новый чат</div>
-    <div class="model-pill">🌐 compound-beta</div>
+    <div class="model-pill">✦ Gemini 2.5 Flash</div>
   </div>
 
   <div id="chat"></div>
@@ -482,7 +482,7 @@
 
 <script>
   const API = "/api/chat";
-  const SYSTEM = "Ты — MChat, умный и дружелюбный ИИ-помощник. У тебя есть доступ к интернету — используй его когда нужна актуальная информация. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
+  const SYSTEM = "Ты — MChat, умный и дружелюбный ИИ-помощник на базе Gemini 2.5 Flash. Отвечай чётко и полезно. Всегда отвечай на том языке, на котором пишет пользователь.";
   const STORAGE_KEY = "mchat_v3";
 
   let chats = [];
@@ -548,27 +548,24 @@
     $("statMsgs").textContent = chats.reduce((s, c) => s + c.messages.length, 0);
   }
 
-  function welcomeHTML() {
-    return `<div class="welcome">
-      <span class="welcome-icon">✦</span>
-      <h2>Привет! Я <span>MChat</span></h2>
-      <p>Умный помощник с поиском в интернете.<br>Спроси что угодно — отвечу честно и быстро.</p>
-      <div class="chips">
-        <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
-        <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
-        <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
-        <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
-        <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
-        <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
-      </div>
-    </div>`;
-  }
-
   function renderChat() {
     const chat = getActive();
     chatEl.innerHTML = "";
     if (!chat || !chat.messages.length) {
-      chatEl.innerHTML = welcomeHTML();
+      chatEl.innerHTML = `
+        <div class="welcome">
+          <span class="welcome-icon">✦</span>
+          <h2>Привет! Я <span>MChat</span></h2>
+          <p>Умный помощник на базе Gemini 2.5 Flash.<br>Спроси что угодно — отвечу честно и быстро.</p>
+          <div class="chips">
+            <div class="chip" onclick="ask('Что сейчас происходит в мире?')">🌍 Новости</div>
+            <div class="chip" onclick="ask('Напиши змейку на Python')">🐍 Код</div>
+            <div class="chip" onclick="ask('Какой сейчас курс доллара?')">💵 Курс</div>
+            <div class="chip" onclick="ask('Объясни квантовую физику просто')">⚛️ Наука</div>
+            <div class="chip" onclick="ask('Расскажи анекдот')">😄 Анекдот</div>
+            <div class="chip" onclick="ask('Лучшие фильмы 2025 года')">🎬 Кино</div>
+          </div>
+        </div>`;
       $("chatTitleDisplay").textContent = "Новый чат";
     } else {
       $("chatTitleDisplay").textContent = chat.title;
@@ -645,7 +642,7 @@
       <div class="search-dot"></div>
       <div class="search-dot"></div>
       <div class="search-dot"></div>
-    </div>Ищу в интернете...`;
+    </div>Думаю...`;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
   }

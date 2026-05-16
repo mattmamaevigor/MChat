@@ -31,9 +31,9 @@ export default async function handler(req) {
       return json({ error: { message: "Last message must be from user" } }, 400);
     }
 
-    const openRouterMessages = [];
-    if (systemMsg) openRouterMessages.push({ role: "system", content: systemMsg });
-    openRouterMessages.push(...history);
+    const apiMessages = [];
+    if (systemMsg) apiMessages.push({ role: "system", content: systemMsg });
+    apiMessages.push(...history);
 
     const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -44,8 +44,8 @@ export default async function handler(req) {
         "X-Title": "MChat",
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1:free",
-        messages: openRouterMessages,
+        model: "qwen/qwen3.6-plus:free",
+        messages: apiMessages,
         stream: true,
         temperature: Math.min(Math.max(parseFloat(temperature) || 0.7, 0), 2),
         max_tokens: 8192,
@@ -57,7 +57,6 @@ export default async function handler(req) {
       return json({ error: { message: err?.error?.message || `OpenRouter error ${orRes.status}` } }, orRes.status);
     }
 
-    // Edge streaming — трансформируем OpenAI SSE → наш SSE формат
     const stream = new TransformStream();
     const writer = stream.writable.getWriter();
     const encoder = new TextEncoder();
@@ -79,7 +78,6 @@ export default async function handler(req) {
             if (data === "[DONE]") continue;
             try {
               const parsed = JSON.parse(data);
-              // DeepSeek R1 иногда возвращает reasoning в отдельном поле
               const text = parsed.choices?.[0]?.delta?.content;
               if (text) {
                 await writer.write(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
